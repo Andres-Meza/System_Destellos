@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Finalizar compra · Destellos{% endblock %}
+{% block page %}checkout{% endblock %}
+
+{% block content %}
+<header class="page-head">
+    <p class="eyebrow">Último paso</p>
+    <h1 class="page-title">Finalizar compra</h1>
+</header>
+
+<div class="checkout">
+    <div class="checkout__main">
+        <section class="panel" aria-labelledby="co-datos">
+            <h2 id="co-datos">Tus datos</h2>
+            <dl class="data-list">
+                <div><dt>Nombre</dt><dd>{{ request.cliente.nombre }}</dd></div>
+                <div><dt>Correo</dt><dd>{{ request.cliente.correo }}</dd></div>
+                <div><dt>Dirección</dt><dd>{{ request.cliente.direccion|default:"Sin dirección registrada" }}</dd></div>
+            </dl>
+        </section>
+
+        <section class="panel" aria-labelledby="co-resumen">
+            <h2 id="co-resumen">Resumen del pedido</h2>
+            <div id="co-lines" aria-live="polite"><p class="help">Cargando tu carrito…</p></div>
+        </section>
+    </div>
+
+    <aside class="checkout__side panel" aria-labelledby="co-total-title">
+        <h2 id="co-total-title">Total</h2>
+        <p class="checkout__total" id="co-total">—</p>
+        <p class="help">Los precios y el total los confirma el servidor al registrar el pedido. El pago en línea aún no está habilitado: tu pedido quedará registrado como «Pendiente» y no se realiza ningún cobro.</p>
+        <button type="button" class="btn btn--primary btn--block" id="co-confirm" disabled>Confirmar pedido</button>
+        <p class="status" id="co-status" role="status" aria-live="polite"></p>
+        <a class="link-btn" href="{% url 'productos' %}">Seguir comprando</a>
+    </aside>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Ingresar · Destellos{% endblock %}
+{% block page %}login{% endblock %}
+
+{% block content %}
+<section class="auth panel" aria-labelledby="login-title">
+    <h1 id="login-title" class="auth__title">Iniciar sesión</h1>
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+
+        <div class="field">
+            <label for="email">{{ form.correo.label }}</label>
+            {{ form.correo }}
+            {% for e in form.correo.errors %}<p class="error-text">{{ e }}</p>{% endfor %}
+        </div>
+
+        <div class="field">
+            <label for="password">{{ form.contrasena.label }}</label>
+            {{ form.contrasena }}
+            {% for e in form.contrasena.errors %}<p class="error-text">{{ e }}</p>{% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--block">Ingresar</button>
+    </form>
+</section>
+{% endblock %}

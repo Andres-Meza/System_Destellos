@@ -1,0 +1,32 @@
+<div class="drawer-overlay" id="cart-overlay" hidden></div>
+<aside class="drawer" id="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title" tabindex="-1" hidden>
+    <div class="drawer__head">
+        <h2 id="cart-title">Tu carrito</h2>
+        <button type="button" class="icon-btn" id="cart-close" aria-label="Cerrar carrito">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+    </div>
+
+    <div class="drawer__notice" id="cart-notice" role="status" aria-live="polite" hidden></div>
+
+    <div class="drawer__body" id="cart-body"></div>
+
+    <div class="drawer__foot" id="cart-foot" hidden>
+        <div class="totals">
+            <span>Total</span>
+            <strong id="cart-total">$0</strong>
+        </div>
+        <p class="help" id="cart-total-note"></p>
+        <a class="btn btn--primary btn--block" id="cart-checkout" href="{% url 'checkout' %}">Finalizar compra</a>
+        <button type="button" class="btn btn--ghost btn--block" id="cart-continue">Seguir comprando</button>
+
+        <div class="clear-row">
+            <button type="button" class="link-btn" id="cart-clear">Vaciar carrito</button>
+            <span class="clear-confirm" id="cart-clear-confirm" hidden>
+                ¿Vaciar todo el carrito?
+                <button type="button" class="link-btn link-btn--strong" id="cart-clear-yes">Sí, vaciar</button>
+                <button type="button" class="link-btn" id="cart-clear-no">Cancelar</button>
+            </span>
+        </div>
+    </div>
+</aside>

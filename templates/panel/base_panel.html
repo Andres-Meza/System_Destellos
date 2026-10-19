@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#EDE9DE">
+  <title>{% block title %}{{ titulo|default:"Panel" }}{% endblock %} · Panel Destellos</title>
+  <link rel="icon" href="{% static 'img/logo.png' %}" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/panel.css' %}">
+</head>
+<body class="panel-body">
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+  <header class="panel-top">
+    <a class="brand" href="{% url 'panel_inicio' %}" aria-label="Panel de Destellos, ir al resumen">
+      <img src="{% static 'img/logo.png' %}" alt="" width="36" height="36">
+      <span class="brand__name">Destellos</span>
+      <span class="panel-top__tag">Panel</span>
+    </a>
+    <div class="panel-top__user">
+      <span class="panel-top__name">
+        {{ request.user.get_full_name|default:request.user.username }}
+        <small>{% if request.user.is_superuser %}Administrador{% else %}Usuario administrativo{% endif %}</small>
+      </span>
+      <form method="post" action="{% url 'panel_logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn--ghost btn--sm">Cerrar sesión</button>
+      </form>
+    </div>
+  </header>
+
+  <div class="panel-shell">
+    <nav class="panel-nav" aria-label="Secciones del panel">
+      <ul>
+        <li><a href="{% url 'panel_inicio' %}" {% if seccion == 'inicio' %}aria-current="page"{% endif %}>Resumen</a></li>
+        {% if perms.tienda.view_producto %}
+        <li><a href="{% url 'panel_productos' %}" {% if seccion == 'productos' %}aria-current="page"{% endif %}>Productos</a></li>
+        {% endif %}
+        {% if perms.tienda.view_pedido %}
+        <li><a href="{% url 'panel_pedidos' %}" {% if seccion == 'pedidos' %}aria-current="page"{% endif %}>Pedidos</a></li>
+        {% endif %}
+        {% if perms.tienda.view_cliente %}
+        <li><a href="{% url 'panel_clientes' %}" {% if seccion == 'clientes' %}aria-current="page"{% endif %}>Clientes</a></li>
+        {% endif %}
+        {% if request.user.is_superuser %}
+        <li><a href="{% url 'panel_usuarios' %}" {% if seccion == 'usuarios' %}aria-current="page"{% endif %}>Gestión de usuarios</a></li>
+        {% endif %}
+        <li class="panel-nav__sep"><a href="{% url 'inicio' %}">Ver la tienda</a></li>
+      </ul>
+    </nav>
+
+    <main id="contenido" class="panel-main" tabindex="-1">
+      {% if messages %}
+      <ul class="messages panel-messages" role="status">
+        {% for message in messages %}
+        <li class="{{ message.tags }}"><strong class="messages__tag">{% if message.tags == 'error' %}Error:{% elif message.tags == 'success' %}Listo:{% else %}Aviso:{% endif %}</strong> {{ message }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <script src="{% static 'js/panel.js' %}" defer></script>
+</body>
+</html>

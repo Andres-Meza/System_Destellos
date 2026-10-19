@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load tienda_extras %}
+
+{% block title %}Pedido #{{ pedido.pk }} · Destellos{% endblock %}
+{% block page %}pedido{% endblock %}
+
+{% block content %}
+<header class="page-head">
+    <p class="eyebrow">Pedido registrado</p>
+    <h1 class="page-title">Gracias, {{ request.cliente.nombre }}</h1>
+    <p class="page-sub">Tu pedido <strong>#{{ pedido.pk }}</strong> fue registrado el {{ pedido.fecha|date:"j \d\e F \d\e Y" }}. Estado: <strong>{{ pedido.estado }}</strong>.</p>
+</header>
+
+<section class="panel panel--narrow" aria-labelledby="ped-resumen">
+    <h2 id="ped-resumen">Resumen</h2>
+    <ul class="order-lines">
+        {% for l in lineas %}
+        <li>
+            <span class="order-lines__name">{{ l.d.producto.nombre }} <span class="muted">× {{ l.d.cantidad }}</span></span>
+            <span>{{ l.subtotal|precio }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+    <p class="totals"><span>Total</span><strong>{{ pedido.total|precio }}</strong></p>
+    <p class="help">El pago en línea aún no está habilitado, por lo que no se ha realizado ningún cobro.</p>
+    <a class="btn btn--primary" href="{% url 'productos' %}">Seguir comprando</a>
+</section>
+{% endblock %}

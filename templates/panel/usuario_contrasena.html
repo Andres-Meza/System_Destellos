@@ -1,0 +1,19 @@
+{% extends "panel/base_panel.html" %}
+
+{% block content %}
+<div class="panel-head"><h1>Restablecer contraseña</h1></div>
+
+<section class="panel panel--form">
+  <p>Nueva contraseña para <strong>{{ objetivo.username }}</strong>. Sus sesiones abiertas se cerrarán.</p>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="form-errors" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+    {% include "panel/_campo.html" with campo=form.password1 %}
+    {% include "panel/_campo.html" with campo=form.password2 %}
+    <div class="form-actions">
+      <button type="submit" class="btn btn--primary">Guardar contraseña</button>
+      <a class="btn btn--ghost" href="{% url 'panel_usuarios' %}">Cancelar</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

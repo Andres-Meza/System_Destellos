@@ -1,0 +1,17 @@
+{% extends "panel/base_panel.html" %}
+
+{% block content %}
+<div class="panel-head"><h1>Eliminar producto</h1></div>
+
+<section class="panel panel--form">
+  <p>¿Seguro que quieres eliminar <strong>{{ object.nombre }}</strong>? Esta acción no se puede deshacer.</p>
+  {% if pedidos_asociados %}
+  <p class="notice">Este producto aparece en {{ pedidos_asociados }} línea{{ pedidos_asociados|pluralize }} de pedido y no podrá eliminarse para conservar el historial.</p>
+  {% endif %}
+  <form method="post" class="form-actions">
+    {% csrf_token %}
+    <button type="submit" class="btn btn--primary" {% if pedidos_asociados %}disabled{% endif %}>Sí, eliminar</button>
+    <a class="btn btn--ghost" href="{% url 'panel_productos' %}">Cancelar</a>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}{% if q %}Resultados para «{{ q }}»{% else %}Productos{% endif %} · Destellos{% endblock %}
+{% block page %}productos{% endblock %}
+
+{% block content %}
+<header class="page-head">
+    <p class="eyebrow">Catálogo</p>
+    <h1 class="page-title">{% if q %}Resultados para «{{ q }}»{% else %}Nuestros Packs de Decoraciones{% endif %}</h1>
+    {% if q %}
+    <p class="page-sub">{{ pagina.paginator.count }} producto{{ pagina.paginator.count|pluralize }} encontrado{{ pagina.paginator.count|pluralize }}.
+        <a href="{% url 'productos' %}">Ver todos</a></p>
+    {% endif %}
+</header>
+
+{% if pagina %}
+<ul class="p-grid">
+    {% for p in pagina %}{% include "partials/producto_card.html" %}{% endfor %}
+</ul>
+
+{% if pagina.has_other_pages %}
+<nav class="pager" aria-label="Paginación del catálogo">
+    {% if pagina.has_previous %}<a class="btn btn--ghost" href="?{% if q %}q={{ q|urlencode }}&amp;{% endif %}page={{ pagina.previous_page_number }}" rel="prev">&larr; Anterior</a>{% endif %}
+    <span class="pager__info">Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>
+    {% if pagina.has_next %}<a class="btn btn--ghost" href="?{% if q %}q={{ q|urlencode }}&amp;{% endif %}page={{ pagina.next_page_number }}" rel="next">Siguiente &rarr;</a>{% endif %}
+</nav>
+{% endif %}
+
+{% else %}
+<div class="empty-state">
+    <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+    {% if q %}
+    <h2>No encontramos productos para «{{ q }}»</h2>
+    <p>Prueba con otra palabra o revisa el catálogo completo.</p>
+    <a class="btn btn--primary" href="{% url 'productos' %}">Ver todos los productos</a>
+    {% else %}
+    <h2>Aún no hay productos disponibles</h2>
+    <p>Vuelve pronto: estamos preparando nuevas decoraciones.</p>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

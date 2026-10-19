@@ -1,0 +1,57 @@
+{% extends "panel/base_panel.html" %}
+
+{% block content %}
+<div class="panel-head">
+  <h1>Gestión de usuarios</h1>
+  <a class="btn btn--primary btn--sm" href="{% url 'panel_usuario_nuevo' %}">Nuevo usuario</a>
+</div>
+
+<form class="toolbar" method="get" role="search">
+  <label class="sr-only" for="q">Buscar usuarios</label>
+  <input id="q" type="search" name="q" value="{{ q }}" placeholder="Nombre de usuario o correo" maxlength="100">
+  <button class="btn btn--ghost btn--sm" type="submit">Buscar</button>
+  {% if q %}<a class="link-btn" href="{% url 'panel_usuarios' %}">Limpiar</a>{% endif %}
+</form>
+
+{% if usuarios %}
+<div class="table-wrap">
+  <table class="table">
+    <caption class="sr-only">Usuarios del sistema</caption>
+    <thead>
+      <tr>
+        <th scope="col">Usuario</th><th scope="col">Nombre</th><th scope="col">Correo</th>
+        <th scope="col">Rol / módulos</th><th scope="col">Estado</th><th scope="col">Creado</th><th scope="col">Último acceso</th>
+        <th scope="col"><span class="sr-only">Acciones</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in usuarios %}
+      <tr>
+        <td data-label="Usuario">{{ u.username }}</td>
+        <td data-label="Nombre">{{ u.get_full_name|default:"—" }}</td>
+        <td data-label="Correo">{{ u.email|default:"—" }}</td>
+        <td data-label="Rol">{{ u.rol_texto }}</td>
+        <td data-label="Estado"><span class="badge {% if not u.is_active %}badge--off{% endif %}">{% if u.is_active %}Activo{% else %}Inactivo{% endif %}</span></td>
+        <td data-label="Creado">{{ u.date_joined|date:"d/m/Y" }}</td>
+        <td data-label="Último acceso">{{ u.last_login|date:"d/m/Y H:i"|default:"Nunca" }}</td>
+        <td class="actions">
+          <a class="link-btn" href="{% url 'panel_usuario_editar' u.pk %}">Editar</a>
+          <a class="link-btn" href="{% url 'panel_usuario_contrasena' u.pk %}">Contraseña</a>
+          {% if u.pk != request.user.pk %}
+          <form method="post" action="{% url 'panel_usuario_estado' u.pk %}" class="inline-form"
+                {% if u.is_active %}data-confirm="¿Desactivar la cuenta de {{ u.username }}? No podrá iniciar sesión."{% endif %}>
+            {% csrf_token %}
+            <button type="submit" class="link-btn">{% if u.is_active %}Desactivar{% else %}Activar{% endif %}</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "panel/_paginacion.html" %}
+{% else %}
+<section class="panel"><p>{% if q %}No hay usuarios que coincidan con «{{ q }}».{% else %}No hay usuarios.{% endif %}</p></section>
+{% endif %}
+{% endblock %}

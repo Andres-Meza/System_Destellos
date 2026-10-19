@@ -1,0 +1,26 @@
+{% extends "panel/base_panel.html" %}
+
+{% block content %}
+<div class="panel-head">
+  <div>
+    <h1>Hola, {{ request.user.first_name|default:request.user.username }}</h1>
+    <p class="muted">Rol: {{ rol }}</p>
+  </div>
+</div>
+
+{% if resumen %}
+<section class="stats" aria-label="Resumen del sistema">
+  {% for nombre, valor, url in resumen %}
+  <a class="stat" href="{{ url }}">
+    <span class="stat__value">{{ valor }}</span>
+    <span class="stat__label">{{ nombre }}</span>
+  </a>
+  {% endfor %}
+</section>
+{% else %}
+<section class="panel">
+  <h2>Sin módulos asignados</h2>
+  <p>Tu cuenta aún no tiene permisos sobre ningún módulo. Pide al administrador que te asigne los que necesitas.</p>
+</section>
+{% endif %}
+{% endblock %}

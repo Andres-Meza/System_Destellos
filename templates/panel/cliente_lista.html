@@ -1,0 +1,34 @@
+{% extends "panel/base_panel.html" %}
+
+{% block content %}
+<div class="panel-head"><h1>Clientes</h1></div>
+
+<form class="toolbar" method="get" role="search">
+  <label class="sr-only" for="q">Buscar clientes</label>
+  <input id="q" type="search" name="q" value="{{ q }}" placeholder="Nombre o correo" maxlength="100">
+  <button class="btn btn--ghost btn--sm" type="submit">Buscar</button>
+  {% if q %}<a class="link-btn" href="{% url 'panel_clientes' %}">Limpiar</a>{% endif %}
+</form>
+
+{% if clientes %}
+<div class="table-wrap">
+  <table class="table">
+    <caption class="sr-only">Listado de clientes</caption>
+    <thead><tr><th scope="col">Nombre</th><th scope="col">Correo</th><th scope="col">Dirección</th><th scope="col">Pedidos</th></tr></thead>
+    <tbody>
+      {% for c in clientes %}
+      <tr>
+        <td data-label="Nombre">{{ c.nombre }}</td>
+        <td data-label="Correo">{{ c.correo }}</td>
+        <td data-label="Dirección">{{ c.direccion|default:"—" }}</td>
+        <td data-label="Pedidos">{{ c.num_pedidos }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "panel/_paginacion.html" %}
+{% else %}
+<section class="panel"><p>{% if q %}No hay clientes que coincidan con «{{ q }}».{% else %}Todavía no hay clientes.{% endif %}</p></section>
+{% endif %}
+{% endblock %}

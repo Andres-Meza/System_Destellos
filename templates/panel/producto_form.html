@@ -1,0 +1,30 @@
+{% extends "panel/base_panel.html" %}
+
+{% block content %}
+<div class="panel-head"><h1>{{ titulo }}</h1></div>
+
+<section class="panel panel--form">
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="form-errors" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+
+    {% include "panel/_campo.html" with campo=form.nombre %}
+    {% include "panel/_campo.html" with campo=form.descripcion %}
+    {% include "panel/_campo.html" with campo=form.precio %}
+
+    {% if object.imagen_url %}
+    <div class="field">
+      <p class="label-like">Imagen actual</p>
+      <img class="thumb-lg" src="{{ object.imagen_url }}" alt="Imagen actual de {{ object.nombre }}" width="160" height="160">
+      {% include "panel/_campo.html" with campo=form.quitar_imagen %}
+    </div>
+    {% endif %}
+    {% include "panel/_campo.html" with campo=form.imagen_archivo %}
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn--primary">Guardar</button>
+      <a class="btn btn--ghost" href="{% url 'panel_productos' %}">Cancelar</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

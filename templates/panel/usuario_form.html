@@ -1,0 +1,39 @@
+{% extends "panel/base_panel.html" %}
+
+{% block content %}
+<div class="panel-head"><h1>{{ titulo }}</h1></div>
+
+<section class="panel panel--form">
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="form-errors" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+
+    {% if edicion %}
+    <div class="field"><p class="label-like">Nombre de usuario</p><p><strong>{{ object.username }}</strong></p></div>
+    {% else %}
+    {% include "panel/_campo.html" with campo=form.username %}
+    {% endif %}
+    {% include "panel/_campo.html" with campo=form.first_name %}
+    {% include "panel/_campo.html" with campo=form.last_name %}
+    {% include "panel/_campo.html" with campo=form.email %}
+
+    {% if not edicion %}
+    {% include "panel/_campo.html" with campo=form.password1 %}
+    {% include "panel/_campo.html" with campo=form.password2 %}
+    {% endif %}
+
+    {% include "panel/_campo.html" with campo=form.rol %}
+    <fieldset class="field" data-solo-staff>
+      <legend>{{ form.grupos.label }}</legend>
+      {{ form.grupos }}
+      {% if form.grupos.help_text %}<p class="help">{{ form.grupos.help_text }}</p>{% endif %}
+      {% for e in form.grupos.errors %}<p class="error-text">{{ e }}</p>{% endfor %}
+    </fieldset>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn--primary">{% if edicion %}Guardar cambios{% else %}Crear usuario{% endif %}</button>
+      <a class="btn btn--ghost" href="{% url 'panel_usuarios' %}">Cancelar</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

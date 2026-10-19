@@ -1,0 +1,44 @@
+{% extends "panel/base_panel.html" %}
+{% load tienda_extras %}
+
+{% block content %}
+<div class="panel-head">
+  <h1>Productos</h1>
+  {% if perms.tienda.add_producto %}<a class="btn btn--primary btn--sm" href="{% url 'panel_producto_nuevo' %}">Nuevo producto</a>{% endif %}
+</div>
+
+<form class="toolbar" method="get" role="search">
+  <label class="sr-only" for="q">Buscar productos</label>
+  <input id="q" type="search" name="q" value="{{ q }}" placeholder="Buscar por nombre o descripción" maxlength="100">
+  <button class="btn btn--ghost btn--sm" type="submit">Buscar</button>
+  {% if q %}<a class="link-btn" href="{% url 'panel_productos' %}">Limpiar</a>{% endif %}
+</form>
+
+{% if productos %}
+<div class="table-wrap">
+  <table class="table">
+    <caption class="sr-only">Listado de productos</caption>
+    <thead>
+      <tr><th scope="col">Imagen</th><th scope="col">Nombre</th><th scope="col">Precio</th><th scope="col"><span class="sr-only">Acciones</span></th></tr>
+    </thead>
+    <tbody>
+      {% for p in productos %}
+      <tr>
+        <td>{% if p.imagen_url %}<img class="thumb-sm" src="{{ p.imagen_url }}" alt="" width="48" height="48" loading="lazy">{% else %}<span class="thumb-sm thumb-sm--empty" aria-label="Sin imagen">—</span>{% endif %}</td>
+        <td data-label="Nombre">{{ p.nombre }}</td>
+        <td data-label="Precio">{{ p.precio|precio }}</td>
+        <td class="actions">
+          <a class="link-btn" href="{{ p.get_absolute_url }}">Ver en tienda</a>
+          {% if perms.tienda.change_producto %}<a class="link-btn" href="{% url 'panel_producto_editar' p.pk %}">Editar</a>{% endif %}
+          {% if perms.tienda.delete_producto %}<a class="link-btn" href="{% url 'panel_producto_eliminar' p.pk %}">Eliminar</a>{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "panel/_paginacion.html" %}
+{% else %}
+<section class="panel"><p>{% if q %}No hay productos que coincidan con «{{ q }}».{% else %}Todavía no hay productos.{% endif %}</p></section>
+{% endif %}
+{% endblock %}

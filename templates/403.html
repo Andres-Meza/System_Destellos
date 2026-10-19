@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Acceso denegado · Destellos{% endblock %}
+
+{% block content %}
+<section class="empty-state">
+  <h1>Acceso denegado</h1>
+  <p>No tienes permiso para realizar esta acción o ver esta página.</p>
+  {% if request.user.is_authenticated and request.user.is_staff %}
+  <a class="btn btn--primary" href="{% url 'panel_inicio' %}">Volver al panel</a>
+  {% else %}
+  <a class="btn btn--primary" href="{% url 'inicio' %}">Ir al inicio</a>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "panel/base_panel.html" %}
+{% load tienda_extras %}
+
+{% block content %}
+<div class="panel-head"><h1>Pedidos</h1></div>
+
+<form class="toolbar" method="get" role="search">
+  <label class="sr-only" for="q">Buscar pedidos</label>
+  <input id="q" type="search" name="q" value="{{ q }}" placeholder="N.º de pedido, cliente o correo" maxlength="100">
+  <label class="sr-only" for="estado">Estado</label>
+  <select id="estado" name="estado">
+    <option value="">Todos los estados</option>
+    {% for e in estados %}<option value="{{ e }}" {% if e == estado %}selected{% endif %}>{{ e }}</option>{% endfor %}
+  </select>
+  <button class="btn btn--ghost btn--sm" type="submit">Filtrar</button>
+  {% if q or estado %}<a class="link-btn" href="{% url 'panel_pedidos' %}">Limpiar</a>{% endif %}
+</form>
+
+{% if pedidos %}
+<div class="table-wrap">
+  <table class="table">
+    <caption class="sr-only">Listado de pedidos</caption>
+    <thead>
+      <tr><th scope="col">Pedido</th><th scope="col">Fecha</th><th scope="col">Cliente</th><th scope="col">Total</th><th scope="col">Estado</th><th scope="col"><span class="sr-only">Acciones</span></th></tr>
+    </thead>
+    <tbody>
+      {% for p in pedidos %}
+      <tr>
+        <td data-label="Pedido">#{{ p.pk }}</td>
+        <td data-label="Fecha">{{ p.fecha|date:"d/m/Y" }}</td>
+        <td data-label="Cliente">{{ p.cliente.nombre }}</td>
+        <td data-label="Total">{{ p.total|precio }}</td>
+        <td data-label="Estado"><span class="badge">{{ p.estado|default:"—" }}</span></td>
+        <td class="actions"><a class="link-btn" href="{% url 'panel_pedido_detalle' p.pk %}">Ver detalle</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "panel/_paginacion.html" %}
+{% else %}
+<section class="panel"><p>No hay pedidos para mostrar.</p></section>
+{% endif %}
+{% endblock %}

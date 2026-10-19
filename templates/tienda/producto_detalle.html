@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load tienda_extras %}
+
+{% block title %}{{ p.nombre }} · Destellos{% endblock %}
+{% block page %}producto{% endblock %}
+
+{% block content %}
+<nav class="breadcrumb" aria-label="Ruta de navegación">
+    <a href="{% url 'productos' %}">Productos</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{{ p.nombre }}</span>
+</nav>
+
+<article class="detail">
+    <div class="detail__media{% if not p.imagen %} is-empty{% endif %}">
+        {% if p.imagen %}<img src="{{ p.imagen_url }}" alt="{{ p.nombre }}" width="900" height="900" decoding="async" fetchpriority="high" data-fallback>{% endif %}
+        <svg class="p-card__placeholder" viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="1"/><circle cx="9" cy="10" r="1.6"/><path d="m4 18 5.2-5 3.5 3.3 2.8-2.6L20 17"/></svg>
+    </div>
+
+    <div class="detail__info">
+        <h1 class="detail__title">{{ p.nombre }}</h1>
+        <p class="detail__price">{{ p.precio|precio }}</p>
+
+        {% if p.descripcion %}
+        <div class="detail__desc">{{ p.descripcion|linebreaks }}</div>
+        {% endif %}
+
+        <form class="buy" id="add-form" novalidate
+              data-id="{{ p.pk }}" data-nombre="{{ p.nombre }}" data-precio="{{ p.precio_texto }}"
+              data-imagen="{{ p.imagen_url|default:'' }}" data-url="{{ p.get_absolute_url }}" data-max="{{ max_cantidad }}">
+            <label class="buy__label" for="qty">Cantidad</label>
+            <div class="stepper" role="group" aria-label="Seleccionar cantidad">
+                <button type="button" class="stepper__btn" data-step="-1" aria-label="Disminuir cantidad">&minus;</button>
+                <input id="qty" name="qty" type="text" inputmode="numeric" autocomplete="off" value="1"
+                       aria-describedby="qty-help qty-error">
+                <button type="button" class="stepper__btn" data-step="1" aria-label="Aumentar cantidad">+</button>
+            </div>
+            <p class="help" id="qty-help">Mínimo 1 · máximo {{ max_cantidad }} por producto</p>
+            <p class="error-text" id="qty-error" role="alert" hidden></p>
+
+            <button type="submit" class="btn btn--primary btn--block" id="add-btn">Agregar al carrito</button>
+            <p class="help" id="in-cart-note" role="status" aria-live="polite" hidden></p>
+        </form>
+    </div>
+</article>
+{% endblock %}

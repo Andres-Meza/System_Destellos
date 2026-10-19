@@ -1,0 +1,11 @@
+{% load tienda_extras %}
+<li class="p-grid__item">
+    <a class="p-card" href="{{ p.get_absolute_url }}">
+        <span class="p-card__media{% if not p.imagen %} is-empty{% endif %}">
+            {% if p.imagen %}<img src="{{ p.imagen_url }}" alt="" width="600" height="600" loading="lazy" decoding="async" data-fallback>{% endif %}
+            <svg class="p-card__placeholder" viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="1"/><circle cx="9" cy="10" r="1.6"/><path d="m4 18 5.2-5 3.5 3.3 2.8-2.6L20 17"/></svg>
+        </span>
+        <h3 class="p-card__name">{{ p.nombre }}</h3>
+        <p class="p-card__price">{{ p.precio|precio }}</p>
+    </a>
+</li>

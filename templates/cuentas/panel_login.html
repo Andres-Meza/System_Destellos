@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Acceso del personal · Destellos{% endblock %}
+{% block page %}panel-login{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/panel.css' %}">{% endblock %}
+
+{% block content %}
+<section class="auth panel" aria-labelledby="login-title">
+  <h1 id="login-title" class="auth__title">Acceso del personal</h1>
+  <p class="auth__sub">Ingresa con tu usuario o correo para entrar al panel de administración.</p>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+
+    {% if form.non_field_errors %}
+    <div class="form-errors" role="alert">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <div class="field{% if form.usuario.errors %} field--error{% endif %}">
+      <label for="usuario">{{ form.usuario.label }}</label>
+      {{ form.usuario }}
+      {% for e in form.usuario.errors %}<p class="error-text">{{ e }}</p>{% endfor %}
+    </div>
+
+    <div class="field{% if form.contrasena.errors %} field--error{% endif %}">
+      <label for="password">{{ form.contrasena.label }}</label>
+      {{ form.contrasena }}
+      {% for e in form.contrasena.errors %}<p class="error-text">{{ e }}</p>{% endfor %}
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block">Ingresar</button>
+  </form>
+  <p class="auth__foot"><a href="{% url 'inicio' %}">Volver a la tienda</a></p>
+</section>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'js/panel.js' %}" defer></script>{% endblock %}

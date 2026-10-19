@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Inicio · Destellos{% endblock %}
+{% block page %}inicio{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <p class="eyebrow">Decoración y piñatería</p>
+    <h1 class="moon-dance-regular">Bienvenido a Destellos</h1>
+    <p class="hero__lead">Encuentra los mejores productos al mejor precio. Explora nuestra tienda y descubre ofertas increíbles.</p>
+    <a class="btn btn--primary" href="{% url 'productos' %}">Ver productos</a>
+</section>
+
+<!-- ========== CARRUSEL (5 imágenes) ==========
+     Para cambiar una imagen edita el src de su <img> (ruta relativa a static/).
+     Los textos del pie (carousel-caption) son los tuyos, sin cambios. -->
+<section class="carousel" id="carousel" aria-roledescription="carrusel" aria-label="Galería de imágenes">
+    <div class="carousel-track" id="carousel-track">
+
+        <div class="carousel-slide">
+            <img src="{% static 'img/destellos img 2.webp' %}" alt="Globos azules y plateados con temática de fútbol" width="500" height="456" decoding="async">
+            <div class="carousel-caption">Pack de decoración #1</div>
+        </div>
+
+        <div class="carousel-slide">
+            <img src="{% static 'img/destellos IMG 3.webp' %}" alt="Velas largas y onduladas de colores sobre una torta" width="720" height="720" loading="lazy" decoding="async">
+            <div class="carousel-caption">Pack de decoración #2</div>
+        </div>
+
+        <div class="carousel-slide">
+            <img src="{% static 'img/destellos img.jpeg' %}" alt="Arco de globos en forma de corazón" width="345" height="345" loading="lazy" decoding="async">
+            <div class="carousel-caption">Pack de decoración #3</div>
+        </div>
+
+        <div class="carousel-slide">
+            <img src="{% static 'img/destellos img.webp' %}" alt="Faroles de papel de colores" width="1000" height="1000" loading="lazy" decoding="async">
+            <div class="carousel-caption">Celebra tus momentos especiales</div>
+        </div>
+
+        <div class="carousel-slide">
+            <img src="{% static 'img/Destellosimg.webp' %}" alt="Globos metalizados con forma de animales" width="720" height="720" loading="lazy" decoding="async">
+            <div class="carousel-caption">Decoraciones a tu medida</div>
+        </div>
+
+    </div>
+
+    <button type="button" class="carousel-btn prev" id="carousel-prev" aria-label="Imagen anterior">&#10094;</button>
+    <button type="button" class="carousel-btn next" id="carousel-next" aria-label="Imagen siguiente">&#10095;</button>
+    <div class="carousel-dots" id="carousel-dots"></div>
+</section>
+
+<section class="features" aria-label="Ventajas de comprar en Destellos">
+    <article class="feature">
+        <h2>Envío Gratis</h2>
+        <p>En todos tus pedidos superiores a $50. Recibe tus productos en la puerta de tu casa sin costo adicional.</p>
+    </article>
+    <article class="feature">
+        <h2>Pago Seguro</h2>
+        <p>Tus datos están protegidos con encriptación SSL. Paga con tarjeta, transferencia o efectivo.</p>
+    </article>
+    <article class="feature">
+        <h2>Ayuda 24/7</h2>
+        <p>Estamos disponibles todos los días para ayudarte. Contáctanos.</p>
+    </article>
+</section>
+{% endblock %}
