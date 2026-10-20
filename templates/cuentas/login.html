@@ -10,13 +10,13 @@
         {% csrf_token %}
         {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
 
-        <div class="field">
+        <div class="field{% if form.correo.errors %} field--error{% endif %}">
             <label for="email">{{ form.correo.label }}</label>
             {{ form.correo }}
             {% for e in form.correo.errors %}<p class="error-text">{{ e }}</p>{% endfor %}
         </div>
 
-        <div class="field">
+        <div class="field{% if form.contrasena.errors %} field--error{% endif %}">
             <label for="password">{{ form.contrasena.label }}</label>
             {{ form.contrasena }}
             {% for e in form.contrasena.errors %}<p class="error-text">{{ e }}</p>{% endfor %}
