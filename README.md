@@ -158,6 +158,12 @@ Variables que reconoce el proyecto (`config/settings.py`):
 | `DB_HOST` | Servidor de MySQL. | `127.0.0.1` |
 | `DB_PORT` | Puerto de MySQL. | `3306` |
 | `SESSION_COOKIE_SECURE`, `CSRF_COOKIE_SECURE` | Cookies solo por HTTPS (opcionales). | Automático: activas cuando `DEBUG=False` |
+| `SECURE_SSL_REDIRECT` | Redirige todo HTTP a HTTPS (solo producción con HTTPS). | `False` |
+| `SECURE_HSTS_SECONDS` | Segundos de HSTS; empieza con un valor bajo (p. ej. `3600`). | `0` (apagado) |
+| `USE_X_FORWARDED_PROTO` | `True` si un proxy inverso (nginx) envía `X-Forwarded-Proto`. | `False` |
+| `CSRF_TRUSTED_ORIGINS` | Orígenes HTTPS de confianza, separados por comas (p. ej. `https://tu-dominio.com`). | *(vacía)* |
+
+> Con `DEBUG=False` el proyecto **se niega a arrancar** si `SECRET_KEY` falta o es una clave de ejemplo.
 
 Ejemplo de `.env` (usa tus propios valores, **nunca** publiques el archivo):
 
@@ -372,11 +378,8 @@ tienda_destellos/
     js/main.js               Carrusel, menú y comportamientos generales
     js/tienda.js, cart.js    Carrito y página de producto
     js/panel.js              Comportamientos del panel
-    img/                     Imágenes y logo (las subidas del panel van a img/productos/)
+    img/                     Imágenes y logo (las subidas del panel van a img/productos/, ignorada por Git)
   tests_e2e/                 Pruebas de navegador con Playwright (opcionales)
-  tienda_destellos/          Paquete generado por defecto por Django; el proyecto no lo usa
-                             (manage.py usa config.settings)
-  System_Destellos/          Carpeta con un README vacío
   venv/                      Entorno virtual (se crea en la instalación; no se sube a Git)
 ```
 
@@ -416,7 +419,7 @@ Entra por `/panel/ingresar/`. Lo que ves depende de tus permisos.
   ajustar en `/admin/`.
 * No existe registro público para el personal: solo un administrador crea cuentas.
 
-**Seguridad ya incluida:** 5 intentos fallidos bloquean el acceso durante 15 minutos (por IP y usuario), el cierre de
+**Seguridad ya incluida:** 5 intentos fallidos bloquean el acceso durante 15 minutos (por IP y usuario; aplica al login del personal y también al de clientes, con contadores separados), el cierre de
 sesión se hace solo por POST y las cookies son seguras cuando `DEBUG=False`.
 
 ### 6.3. Cómo funciona el carrito
@@ -471,7 +474,7 @@ python manage.py runserver
 python manage.py check
 ```
 
-**Ejecutar las pruebas existentes** (100 pruebas de tienda, cuentas y panel):
+**Ejecutar las pruebas existentes** (105 pruebas de tienda, cuentas y panel):
 
 ```powershell
 # Con MySQL (el usuario necesita permiso para crear la base "test_destellos"):
@@ -516,5 +519,14 @@ antes de publicar.
 duraciones de transición están centralizados como variables CSS al inicio de `static/css/style.css` (bloque
 `:root`). Para ajustar el aspecto de toda la tienda, edita esas variables.
 
-**Antes de publicar en producción:** define una `SECRET_KEY` propia, usa `DEBUG=False`, configura `ALLOWED_HOSTS`
-y ejecuta `python manage.py collectstatic`.
+**Antes de publicar en producción:**
+
+1. Define una `SECRET_KEY` propia, usa `DEBUG=False` y configura `ALLOWED_HOSTS`.
+2. Sirve el sitio por HTTPS y activa `SECURE_SSL_REDIRECT`, `SECURE_HSTS_SECONDS` y, si hay proxy, `USE_X_FORWARDED_PROTO`.
+3. Ejecuta `python manage.py collectstatic` y configura el servidor web para servir `staticfiles/`
+   (Django no sirve estáticos con `DEBUG=False`).
+4. Revisa con `python manage.py check --deploy`.
+5. **Actualiza Django:** la serie 5.0 dejó de recibir parches de seguridad en abril de 2025. Si tu MySQL es 8 o
+   MariaDB 10.5 o superior, cambia `requirements.txt` a `Django>=5.2,<5.3` (LTS) y vuelve a ejecutar las pruebas.
+6. Con varios procesos del servidor, configura una caché compartida (`CACHES`, p. ej. Redis): el bloqueo de intentos
+   de inicio de sesión usa la caché de Django y con la caché por defecto cuenta por proceso.

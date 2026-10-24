@@ -18,7 +18,9 @@ def rol_de(usuario):
 def etiqueta_rol(usuario):
   if usuario.is_superuser:
     return "Administrador"
-  grupos = ", ".join(usuario.groups.order_by("name").values_list("name", flat=True))
+  # Se ordena en Python con .all() para aprovechar prefetch_related("groups") del listado
+  # (order_by() en el gestor ignoraría el prefetch y haría una consulta por usuario).
+  grupos = ", ".join(sorted(g.name for g in usuario.groups.all()))
   return grupos or "Usuario administrativo (sin módulos asignados)"
 
 

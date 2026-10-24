@@ -429,7 +429,6 @@ input:-webkit-autofill:focus {
 .order-lines .thumb { display: grid; place-items: center; }
 .panel--narrow .order-lines li { grid-template-columns: 1fr auto; }
 .order-lines__name { font-weight: 500; }
-.order-lines__line-error { display: block; font-weight: 500; color: var(--danger); border-left: 3px solid var(--danger); padding-left: .5rem; margin-top: .25rem; font-size: .9rem; }
 .totals { display: flex; justify-content: space-between; align-items: baseline; margin: 1rem 0 .25rem; font-size: 1.1rem; }
 .totals strong { font-family: var(--font-serif); font-size: 1.8rem; }
 

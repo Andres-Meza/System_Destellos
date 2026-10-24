@@ -29,7 +29,7 @@ class CarritoError(Exception):
         self.detalle = detalle or {}
 
 
-def _es_entero(valor):
+def es_entero(valor):
     # bool es subclase de int en Python: se rechaza explícitamente.
     return isinstance(valor, int) and not isinstance(valor, bool)
 
@@ -55,9 +55,9 @@ def parsear_items(crudo, estricto=True):
         if not isinstance(fila, dict):
             raise CarritoError("solicitud_invalida", "El formato del carrito no es válido.")
         pid, qty = fila.get("id"), fila.get("qty")
-        if not _es_entero(pid) or pid < 1:
+        if not es_entero(pid) or pid < 1:
             raise CarritoError("producto_invalido", "Hay un producto con identificador inválido.")
-        if not _es_entero(qty) or qty < 1:
+        if not es_entero(qty) or qty < 1:
             raise CarritoError(
                 "cantidad_invalida",
                 "La cantidad debe ser un número entero mayor o igual a 1.",
@@ -142,7 +142,7 @@ def items_de_datos(datos):
                 pid = int(k)
             except (TypeError, ValueError):
                 continue
-            if _es_entero(v) and v >= 1 and pid >= 1:
+            if es_entero(v) and v >= 1 and pid >= 1:
                 limpio[pid] = min(v, MAX_CANTIDAD)
     return limpio
 

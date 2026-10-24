@@ -4,7 +4,6 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model, update_session_auth_hash
 from django.contrib.auth.forms import AdminPasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect
@@ -16,7 +15,7 @@ from tienda.models import Cliente, DetallePedido, Pago, Pedido, Producto
 
 from . import imagenes
 from .forms import ESTADOS_PEDIDO, PedidoEstadoForm, ProductoForm, UsuarioCrearForm, UsuarioEditarForm
-from .reglas import etiqueta_rol, es_ultimo_superusuario_activo, rol_de
+from .reglas import es_ultimo_superusuario_activo, etiqueta_rol
 
 logger = logging.getLogger(__name__)
 Usuario = get_user_model()

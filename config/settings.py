@@ -1,11 +1,21 @@
 from pathlib import Path
-from decouple import config, Csv
+
+from decouple import Csv, config
+from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config("SECRET_KEY", default="dev-inseguro-cambiar")
 DEBUG = config("DEBUG", default=True, cast=bool)
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="127.0.0.1,localhost", cast=Csv())
+
+# Con DEBUG=False no se acepta una clave de ejemplo: las sesiones y los tokens quedarían falsificables.
+_CLAVES_DE_EJEMPLO = ("dev-inseguro-cambiar", "cambia-esto", "django-insecure-")
+if not DEBUG and (not SECRET_KEY or SECRET_KEY.startswith(_CLAVES_DE_EJEMPLO)):
+  raise ImproperlyConfigured(
+    "Con DEBUG=False debes definir en .env una SECRET_KEY propia, larga y aleatoria "
+    "(ver README, paso 5)."
+  )
 
 INSTALLED_APPS = [
   "django.contrib.admin",
@@ -80,7 +90,7 @@ LOGIN_URL = "panel_login"
 LOGIN_REDIRECT_URL = "panel_inicio"
 LOGOUT_REDIRECT_URL = "panel_login"
 PANEL_SESION_SEGUNDOS = 60 * 60 * 8   # duración de la sesión del personal
-PANEL_MAX_INTENTOS = 5                # intentos fallidos antes de bloquear
+PANEL_MAX_INTENTOS = 5                # intentos fallidos antes de bloquear (login del personal y de clientes)
 PANEL_BLOQUEO_SEGUNDOS = 60 * 15      # duración del bloqueo
 
 # Cookies seguras: activas automáticamente cuando DEBUG=False (HTTPS).
@@ -88,6 +98,15 @@ SESSION_COOKIE_SECURE = config("SESSION_COOKIE_SECURE", default=not DEBUG, cast=
 CSRF_COOKIE_SECURE = config("CSRF_COOKIE_SECURE", default=not DEBUG, cast=bool)
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
+
+# Opciones de producción (HTTPS). Todas están apagadas por defecto: actívalas en .env
+# solo cuando el sitio se sirva realmente por HTTPS (ver README, "Antes de publicar").
+SECURE_SSL_REDIRECT = config("SECURE_SSL_REDIRECT", default=False, cast=bool)
+SECURE_HSTS_SECONDS = config("SECURE_HSTS_SECONDS", default=0, cast=int)
+CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", default="", cast=Csv())
+# Detrás de un proxy inverso que añade X-Forwarded-Proto (nginx, etc.):
+if config("USE_X_FORWARDED_PROTO", default=False, cast=bool):
+  SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Imágenes de productos subidas desde el panel (se guardan dentro de static/img/productos/)
 PRODUCTO_IMG_DIR = BASE_DIR / "static" / "img" / "productos"

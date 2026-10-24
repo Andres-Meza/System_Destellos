@@ -207,13 +207,12 @@
     document.body.classList.add('drawer-open');
     setInert(true);
     cartBtn.setAttribute('aria-expanded', 'true');
-    var tk = ++animToken;
+    animToken++;   // invalida el cierre animado que siga en curso
     if (anim()) {
       window.gsap.killTweensOf([drawer, overlay]);
       window.gsap.fromTo(drawer, { xPercent: 100 }, { xPercent: 0, duration: 0.35, ease: 'power3.out', clearProps: 'transform' });
       window.gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.25, clearProps: 'opacity' });
     }
-    void tk;
     drawer.focus();
     verify();
   }

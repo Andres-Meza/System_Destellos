@@ -8,7 +8,9 @@ from django.contrib.auth.hashers import identify_hasher
 from django.contrib.auth.models import Group
 from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.db import connection
 from django.test import Client, TestCase, override_settings
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 
 from cuentas.tests import CLAVE, crear_usuario
@@ -285,6 +287,21 @@ class UsuariosTests(Base):
     self.assertContains(r, "Administrador")
     self.assertContains(r, "Gestor de productos")
     self.assertContains(r, "Activo")
+
+  def test_el_listado_no_hace_una_consulta_por_usuario(self):
+    # Las consultas del listado no deben crecer con el número de usuarios (N+1 en grupos).
+    c = logueado(self.admin)
+    url = reverse("panel_usuarios")
+    c.get(url)  # calienta cachés (content types, etc.) para medir en igualdad de condiciones
+    with CaptureQueriesContext(connection) as pocas:
+      c.get(url)
+    grupo = Group.objects.get(name="Consulta")
+    for i in range(8):
+      crear_usuario(f"extra{i}").groups.add(grupo)
+    with CaptureQueriesContext(connection) as muchas:
+      r = c.get(url)
+    self.assertContains(r, "extra7")
+    self.assertEqual(len(muchas), len(pocas), "El número de consultas depende de la cantidad de usuarios")
 
   def test_14_los_formularios_del_panel_exigen_csrf(self):
     c = Client(enforce_csrf_checks=True)

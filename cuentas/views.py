@@ -53,15 +53,26 @@ def login_view(request):
     return redirect(siguiente or "productos")
 
   form = LoginForm(request.POST or None)
+  status = 200
   if request.method == "POST" and form.is_valid():
-    cliente = Cliente.objects.filter(correo__iexact=form.cleaned_data["correo"]).first()
-    if cliente and _verificar(cliente, form.cleaned_data["contrasena"]):
-      request.session.cycle_key()
-      request.session["id_cliente"] = cliente.pk
-      messages.success(request, f"¡Bienvenido, {cliente.nombre}!")
-      return redirect(siguiente or "productos")
-    messages.error(request, "Correo o contraseña incorrectos.")
-  return render(request, "cuentas/login.html", {"form": form, "next": siguiente})
+    correo = form.cleaned_data["correo"]
+    clave = form.cleaned_data["contrasena"]
+    if throttle.bloqueado(request, correo, throttle.AMBITO_CLIENTE):
+      messages.error(request, "Demasiados intentos fallidos. Espera unos minutos e inténtalo de nuevo.")
+      status = 429
+    else:
+      cliente = Cliente.objects.filter(correo__iexact=correo).first()
+      if cliente and _verificar(cliente, clave):
+        throttle.limpiar(request, correo, throttle.AMBITO_CLIENTE)
+        request.session.cycle_key()
+        request.session["id_cliente"] = cliente.pk
+        messages.success(request, f"¡Bienvenido, {cliente.nombre}!")
+        return redirect(siguiente or "productos")
+      if cliente is None:
+        make_password(clave)  # gasta el mismo tiempo que una verificación real (no revela si el correo existe)
+      throttle.registrar_fallo(request, correo, throttle.AMBITO_CLIENTE)
+      messages.error(request, "Correo o contraseña incorrectos.")
+  return render(request, "cuentas/login.html", {"form": form, "next": siguiente}, status=status)
 
 
 @require_POST

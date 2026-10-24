@@ -5,3 +5,12 @@ staticfiles/
 venv/
 db_prueba.sqlite3
 db.sqlite3
+.venv/
+*.sqlite3
+*.log
+.pytest_cache/
+.idea/
+
+# Archivos subidos desde el panel (no son código fuente)
+static/img/productos/
+media/

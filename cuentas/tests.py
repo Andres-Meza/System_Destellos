@@ -8,6 +8,8 @@ from django.template import Context
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
+from tienda.models import Cliente
+
 Usuario = get_user_model()
 CLAVE = "Clave-Segura-2026!"
 
@@ -147,3 +149,49 @@ class LimiteConfigurableTests(TestCase):
   def test_el_limite_se_lee_de_settings(self):
     from cuentas import throttle
     self.assertGreaterEqual(throttle.MAX_POR_USUARIO, 1)
+
+
+class LoginClienteBloqueoTests(TestCase):
+  """El login de clientes (/login/) limita intentos como el del personal, con contadores propios."""
+
+  def setUp(self):
+    cache.clear()
+    self.cliente = Cliente.objects.create(nombre="Ana", correo="ana@x.com", contrasena="clave123")
+    self.url = reverse("login")
+
+  def tearDown(self):
+    cache.clear()  # los contadores viven en la caché del proceso: no contaminar otras pruebas
+
+  def ingresar(self, clave, correo="ana@x.com"):
+    return self.client.post(self.url, {"correo": correo, "contrasena": clave})
+
+  def test_bloqueo_tras_varios_intentos_fallidos_incluso_con_la_clave_correcta(self):
+    for _ in range(5):
+      self.assertEqual(self.ingresar("mala").status_code, 200)
+    r = self.ingresar("clave123")
+    self.assertEqual(r.status_code, 429)
+    self.assertContains(r, "Demasiados intentos", status_code=429)
+    self.assertNotIn("id_cliente", self.client.session)
+
+  def test_correo_inexistente_tambien_cuenta_y_el_mensaje_es_el_mismo(self):
+    r = self.ingresar("x", correo="nadie@x.com")
+    self.assertContains(r, "Correo o contraseña incorrectos")
+    for _ in range(4):
+      self.ingresar("x", correo="nadie@x.com")
+    self.assertEqual(self.ingresar("x", correo="nadie@x.com").status_code, 429)
+
+  def test_acertar_limpia_los_fallos(self):
+    for _ in range(4):
+      self.ingresar("mala")
+    self.assertEqual(self.ingresar("clave123").status_code, 302)
+    self.client.post(reverse("logout"))
+    for _ in range(4):
+      self.ingresar("mala")
+    self.assertEqual(self.ingresar("clave123").status_code, 302)
+
+  def test_los_fallos_de_clientes_no_bloquean_al_personal(self):
+    crear_usuario("admin1", superuser=True)
+    for _ in range(5):
+      self.ingresar("mala")
+    r = self.client.post(reverse("panel_login"), {"usuario": "admin1", "contrasena": CLAVE})
+    self.assertEqual(r.status_code, 302)

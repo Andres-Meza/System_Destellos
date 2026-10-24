@@ -8,7 +8,6 @@ Uso (con el servidor de desarrollo corriendo en modo SQLite de pruebas):
 import json
 import sqlite3
 import sys
-import time
 from playwright.sync_api import sync_playwright
 
 BASE = sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:8765"

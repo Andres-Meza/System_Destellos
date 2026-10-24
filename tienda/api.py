@@ -63,8 +63,8 @@ def sincronizar(request, datos):
                       login=reverse("login"))
     items = svc.parsear_items(datos.get("items", []), estricto=False)
     owner, base = datos.get("owner"), datos.get("base")
-    owner = owner if svc._es_entero(owner) else None
-    base = base if svc._es_entero(base) else None
+    owner = owner if svc.es_entero(owner) else None
+    base = base if svc.es_entero(base) else None
     resultado, version, accion = svc.sincronizar_carrito(
         cliente, items, owner, bool(datos.get("dirty")), base
     )
